@@ -1,0 +1,5 @@
+/build
+base
+.vs
+/neo/amplitude/Debug
+*vcxproj.user
