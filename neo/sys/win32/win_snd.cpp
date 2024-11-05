@@ -29,7 +29,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../idlib/precompiled.h"
 
 // DirectX SDK
-#include <DxErr.h>
+//#include <DxErr.h>
 
 #include <ks.h>
 #include <ksmedia.h>

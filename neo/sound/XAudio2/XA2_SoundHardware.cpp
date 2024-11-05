@@ -69,94 +69,94 @@ void listDevices_f( const idCmdArgs & args ) {
 		return;
 	}
 
-	UINT32 deviceCount = 0;
-	if ( pXAudio2->GetDeviceCount( &deviceCount ) != S_OK || deviceCount == 0 ) {
-		idLib::Warning( "No audio devices found" );
-		return;
-	}
+	//UINT32 deviceCount = 0;
+	//if ( pXAudio2->GetDeviceCount( &deviceCount ) != S_OK || deviceCount == 0 ) {
+	//	idLib::Warning( "No audio devices found" );
+	//	return;
+	//}
 
-	for ( unsigned int i = 0; i < deviceCount; i++ ) {
-		XAUDIO2_DEVICE_DETAILS deviceDetails;
-		if ( pXAudio2->GetDeviceDetails( i, &deviceDetails ) != S_OK ) {
-			continue;
-		}
-		idStaticList< const char *, 5 > roles;
-		if ( deviceDetails.Role & DefaultConsoleDevice ) {
-			roles.Append( "Console Device" );
-		}
-		if ( deviceDetails.Role & DefaultMultimediaDevice ) {
-			roles.Append( "Multimedia Device" );
-		}
-		if ( deviceDetails.Role & DefaultCommunicationsDevice ) {
-			roles.Append( "Communications Device" );
-		}
-		if ( deviceDetails.Role & DefaultGameDevice ) {
-			roles.Append( "Game Device" );
-		}
-		idStaticList< const char *, 11 > channelNames;
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_LEFT ) {
-			channelNames.Append( "Front Left" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_RIGHT ) {
-			channelNames.Append( "Front Right" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_CENTER ) {
-			channelNames.Append( "Front Center" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_LOW_FREQUENCY ) {
-			channelNames.Append( "Low Frequency" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_BACK_LEFT ) {
-			channelNames.Append( "Back Left" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_BACK_RIGHT ) {
-			channelNames.Append( "Back Right" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_LEFT_OF_CENTER ) {
-			channelNames.Append( "Front Left of Center" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_RIGHT_OF_CENTER ) {
-			channelNames.Append( "Front Right of Center" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_BACK_CENTER ) {
-			channelNames.Append( "Back Center" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_SIDE_LEFT ) {
-			channelNames.Append( "Side Left" );
-		}
-		if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_SIDE_RIGHT ) {
-			channelNames.Append( "Side Right" );
-		}
-		char mbcsDisplayName[ 256 ];
-		wcstombs( mbcsDisplayName, deviceDetails.DisplayName, sizeof( mbcsDisplayName ) );
-		idLib::Printf( "%3d: %s\n", i, mbcsDisplayName );
-		idLib::Printf( "     %d channels, %d Hz\n", deviceDetails.OutputFormat.Format.nChannels, deviceDetails.OutputFormat.Format.nSamplesPerSec );
-		if ( channelNames.Num() != deviceDetails.OutputFormat.Format.nChannels ) {
-			idLib::Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_RED "Mismatch between # of channels and channel mask\n" );
-		}
-		if ( channelNames.Num() == 1 ) {
-			idLib::Printf( "     %s\n", channelNames[0] );
-		} else if ( channelNames.Num() == 2 ) {
-			idLib::Printf( "     %s and %s\n", channelNames[0], channelNames[1] );
-		} else if ( channelNames.Num() > 2 ) {
-			idLib::Printf( "     %s", channelNames[0] );
-			for ( int i = 1; i < channelNames.Num() - 1; i++ ) {
-				idLib::Printf( ", %s", channelNames[i] );
-			}
-			idLib::Printf( ", and %s\n", channelNames[channelNames.Num() - 1] );
-		}
-		if ( roles.Num() == 1 ) {
-			idLib::Printf( "     Default %s\n", roles[0] );
-		} else if ( roles.Num() == 2 ) {
-			idLib::Printf( "     Default %s and %s\n", roles[0], roles[1] );
-		} else if ( roles.Num() > 2 ) {
-			idLib::Printf( "     Default %s", roles[0] );
-			for ( int i = 1; i < roles.Num() - 1; i++ ) {
-				idLib::Printf( ", %s", roles[i] );
-			}
-			idLib::Printf( ", and %s\n", roles[roles.Num() - 1] );
-		}
-	}
+	//for ( unsigned int i = 0; i < deviceCount; i++ ) {
+	//	XAUDIO2_DEVICE_DETAILS deviceDetails;
+	//	if ( pXAudio2->GetDeviceDetails( i, &deviceDetails ) != S_OK ) {
+	//		continue;
+	//	}
+	//	idStaticList< const char *, 5 > roles;
+	//	if ( deviceDetails.Role & DefaultConsoleDevice ) {
+	//		roles.Append( "Console Device" );
+	//	}
+	//	if ( deviceDetails.Role & DefaultMultimediaDevice ) {
+	//		roles.Append( "Multimedia Device" );
+	//	}
+	//	if ( deviceDetails.Role & DefaultCommunicationsDevice ) {
+	//		roles.Append( "Communications Device" );
+	//	}
+	//	if ( deviceDetails.Role & DefaultGameDevice ) {
+	//		roles.Append( "Game Device" );
+	//	}
+	//	idStaticList< const char *, 11 > channelNames;
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_LEFT ) {
+	//		channelNames.Append( "Front Left" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_RIGHT ) {
+	//		channelNames.Append( "Front Right" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_CENTER ) {
+	//		channelNames.Append( "Front Center" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_LOW_FREQUENCY ) {
+	//		channelNames.Append( "Low Frequency" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_BACK_LEFT ) {
+	//		channelNames.Append( "Back Left" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_BACK_RIGHT ) {
+	//		channelNames.Append( "Back Right" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_LEFT_OF_CENTER ) {
+	//		channelNames.Append( "Front Left of Center" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_FRONT_RIGHT_OF_CENTER ) {
+	//		channelNames.Append( "Front Right of Center" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_BACK_CENTER ) {
+	//		channelNames.Append( "Back Center" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_SIDE_LEFT ) {
+	//		channelNames.Append( "Side Left" );
+	//	}
+	//	if ( deviceDetails.OutputFormat.dwChannelMask & SPEAKER_SIDE_RIGHT ) {
+	//		channelNames.Append( "Side Right" );
+	//	}
+	//	char mbcsDisplayName[ 256 ];
+	//	wcstombs( mbcsDisplayName, deviceDetails.DisplayName, sizeof( mbcsDisplayName ) );
+	//	idLib::Printf( "%3d: %s\n", i, mbcsDisplayName );
+	//	idLib::Printf( "     %d channels, %d Hz\n", deviceDetails.OutputFormat.Format.nChannels, deviceDetails.OutputFormat.Format.nSamplesPerSec );
+	//	if ( channelNames.Num() != deviceDetails.OutputFormat.Format.nChannels ) {
+	//		idLib::Printf( S_COLOR_YELLOW "WARNING: " S_COLOR_RED "Mismatch between # of channels and channel mask\n" );
+	//	}
+	//	if ( channelNames.Num() == 1 ) {
+	//		idLib::Printf( "     %s\n", channelNames[0] );
+	//	} else if ( channelNames.Num() == 2 ) {
+	//		idLib::Printf( "     %s and %s\n", channelNames[0], channelNames[1] );
+	//	} else if ( channelNames.Num() > 2 ) {
+	//		idLib::Printf( "     %s", channelNames[0] );
+	//		for ( int i = 1; i < channelNames.Num() - 1; i++ ) {
+	//			idLib::Printf( ", %s", channelNames[i] );
+	//		}
+	//		idLib::Printf( ", and %s\n", channelNames[channelNames.Num() - 1] );
+	//	}
+	//	if ( roles.Num() == 1 ) {
+	//		idLib::Printf( "     Default %s\n", roles[0] );
+	//	} else if ( roles.Num() == 2 ) {
+	//		idLib::Printf( "     Default %s and %s\n", roles[0], roles[1] );
+	//	} else if ( roles.Num() > 2 ) {
+	//		idLib::Printf( "     Default %s", roles[0] );
+	//		for ( int i = 1; i < roles.Num() - 1; i++ ) {
+	//			idLib::Printf( ", %s", roles[i] );
+	//		}
+	//		idLib::Printf( ", and %s\n", roles[roles.Num() - 1] );
+	//	}
+	//}
 }
 
 /*
@@ -199,55 +199,55 @@ void idSoundHardware_XAudio2::Init() {
 	pXAudio2->RegisterForCallbacks( &soundEngineCallback );
 	soundEngineCallback.hardware = this;
 
-	UINT32 deviceCount = 0;
-	if ( pXAudio2->GetDeviceCount( &deviceCount ) != S_OK || deviceCount == 0 ) {
-		idLib::Warning( "No audio devices found" );
-		pXAudio2->Release();
-		pXAudio2 = NULL;
-		return;
-	}
+	//UINT32 deviceCount = 0;
+	//if ( pXAudio2->GetDeviceCount( &deviceCount ) != S_OK || deviceCount == 0 ) {
+	//	idLib::Warning( "No audio devices found" );
+	//	pXAudio2->Release();
+	//	pXAudio2 = NULL;
+	//	return;
+	//}
 
 	idCmdArgs args;
 	listDevices_f( args );
 
-	int preferredDevice = s_device.GetInteger();
-	if ( preferredDevice < 0 || preferredDevice >= (int)deviceCount ) {
-		int preferredChannels = 0;
-		for ( unsigned int i = 0; i < deviceCount; i++ ) {
-			XAUDIO2_DEVICE_DETAILS deviceDetails;
-			if ( pXAudio2->GetDeviceDetails( i, &deviceDetails ) != S_OK ) {
-				continue;
-			}
+	//int preferredDevice = s_device.GetInteger();
+	//if ( preferredDevice < 0 || preferredDevice >= (int)deviceCount ) {
+	//	int preferredChannels = 0;
+	//	for ( unsigned int i = 0; i < deviceCount; i++ ) {
+	//		XAUDIO2_DEVICE_DETAILS deviceDetails;
+	//		if ( pXAudio2->GetDeviceDetails( i, &deviceDetails ) != S_OK ) {
+	//			continue;
+	//		}
 
-			if ( deviceDetails.Role & DefaultGameDevice ) {
-				// if we find a device the user marked as their preferred 'game' device, then always use that
-				preferredDevice = i;
-				preferredChannels = deviceDetails.OutputFormat.Format.nChannels;
-				break;
-			}
+	//		if ( deviceDetails.Role & DefaultGameDevice ) {
+	//			// if we find a device the user marked as their preferred 'game' device, then always use that
+	//			preferredDevice = i;
+	//			preferredChannels = deviceDetails.OutputFormat.Format.nChannels;
+	//			break;
+	//		}
 
-			if ( deviceDetails.OutputFormat.Format.nChannels > preferredChannels ) {
-				preferredDevice = i;
-				preferredChannels = deviceDetails.OutputFormat.Format.nChannels;
-			}
-		}
-	}
+	//		if ( deviceDetails.OutputFormat.Format.nChannels > preferredChannels ) {
+	//			preferredDevice = i;
+	//			preferredChannels = deviceDetails.OutputFormat.Format.nChannels;
+	//		}
+	//	}
+	//}
 
-	idLib::Printf( "Using device %d\n", preferredDevice );
+	//idLib::Printf( "Using device %d\n", preferredDevice );
 
-	XAUDIO2_DEVICE_DETAILS deviceDetails;
-	if ( pXAudio2->GetDeviceDetails( preferredDevice, &deviceDetails ) != S_OK ) {
-		// One way this could happen is if a device is removed between the loop and this line of code
-		// Highly unlikely but possible
-		idLib::Warning( "Failed to get device details" );
-		pXAudio2->Release();
-		pXAudio2 = NULL;
-		return;
-	}
+	//XAUDIO2_DEVICE_DETAILS deviceDetails;
+	//if ( pXAudio2->GetDeviceDetails( preferredDevice, &deviceDetails ) != S_OK ) {
+	//	// One way this could happen is if a device is removed between the loop and this line of code
+	//	// Highly unlikely but possible
+	//	idLib::Warning( "Failed to get device details" );
+	//	pXAudio2->Release();
+	//	pXAudio2 = NULL;
+	//	return;
+	//}
 
 	DWORD outputSampleRate = 44100; // Max( (DWORD)XAUDIO2FX_REVERB_MIN_FRAMERATE, Min( (DWORD)XAUDIO2FX_REVERB_MAX_FRAMERATE, deviceDetails.OutputFormat.Format.nSamplesPerSec ) );
 
-	if ( FAILED( pXAudio2->CreateMasteringVoice( &pMasterVoice, XAUDIO2_DEFAULT_CHANNELS, outputSampleRate, 0, preferredDevice, NULL ) ) ) {
+	if ( FAILED( pXAudio2->CreateMasteringVoice( &pMasterVoice, XAUDIO2_DEFAULT_CHANNELS, outputSampleRate, 0) ) ) {
 		idLib::Warning( "Failed to create master voice" );
 		pXAudio2->Release();
 		pXAudio2 = NULL;
@@ -255,8 +255,10 @@ void idSoundHardware_XAudio2::Init() {
 	}
 	pMasterVoice->SetVolume( DBtoLinear( s_volume_dB.GetFloat() ) );
 
-	outputChannels = deviceDetails.OutputFormat.Format.nChannels;
-	channelMask = deviceDetails.OutputFormat.dwChannelMask;
+	//outputChannels = deviceDetails.OutputFormat.Format.nChannels;
+	//channelMask = deviceDetails.OutputFormat.dwChannelMask;
+	outputChannels = 2;
+	channelMask = 2;
 
 	idSoundVoice::InitSurround( outputChannels, channelMask );
 
