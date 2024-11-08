@@ -257,8 +257,10 @@ void idSoundHardware_XAudio2::Init() {
 
 	//outputChannels = deviceDetails.OutputFormat.Format.nChannels;
 	//channelMask = deviceDetails.OutputFormat.dwChannelMask;
-	outputChannels = 2;
-	channelMask = 2;
+	XAUDIO2_VOICE_DETAILS voiceDetail;
+	pMasterVoice->GetVoiceDetails(&voiceDetail);
+	outputChannels = voiceDetail.InputChannels;
+	pMasterVoice->GetChannelMask(&channelMask);
 
 	idSoundVoice::InitSurround( outputChannels, channelMask );
 

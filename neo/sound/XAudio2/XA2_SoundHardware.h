@@ -89,7 +89,7 @@ private:
 	int					lastResetTime;
 
 	int					outputChannels;
-	int					channelMask;
+	DWORD					channelMask;
 
 	idDebugGraph *		vuMeterRMS;
 	idDebugGraph *		vuMeterPeak;
