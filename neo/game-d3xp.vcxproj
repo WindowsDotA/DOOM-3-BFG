@@ -172,6 +172,7 @@
     <ClCompile Include="d3xp\menus\MenuScreen_Shell_Singleplayer.cpp" />
     <ClCompile Include="d3xp\menus\MenuScreen_Shell_Stereoscopics.cpp" />
     <ClCompile Include="d3xp\menus\MenuScreen_Shell_SystemOptions.cpp" />
+    <ClCompile Include="d3xp\menus\MenuScreen_Shell_WindowsDotA.cpp" />
     <ClCompile Include="d3xp\menus\MenuWidget.cpp" />
     <ClCompile Include="d3xp\menus\MenuWidget_Button.cpp" />
     <ClCompile Include="d3xp\menus\MenuWidget_Carousel.cpp" />

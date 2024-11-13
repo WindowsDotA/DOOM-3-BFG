@@ -764,6 +764,15 @@ private:
 	idList< devOption_t, TAG_IDLIB_LIST_MENU >		devOptions;
 };
 
+class idMenuScreen_Shell_WindowsDotA : public idMenuScreen {
+public:
+	virtual void				Initialize(idMenuHandler* data);
+	virtual void				Update();
+	virtual void				ShowScreen(const mainMenuTransition_t transitionType);
+	virtual void				HideScreen(const mainMenuTransition_t transitionType);
+	virtual bool				HandleAction(idWidgetAction& action, const idWidgetEvent& event, idMenuWidget* widget, bool forceHandled = false);
+};
+
 //*
 //================================================	
 //idMenuScreen_Shell_NewGame

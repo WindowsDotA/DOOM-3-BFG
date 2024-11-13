@@ -140,6 +140,7 @@ void idMenuScreen_Shell_Dev::SetupDevOptions() {
 	devOptions.Append( devOption_t( NULL, "-Test Maps-" ) );
 	devOptions.Append( devOption_t( "game/pdas", "PDAs" ) );
 	devOptions.Append( devOption_t( "testmaps/test_box", "Box" ) );
+	devOptions.Append(devOption_t(NULL, "WindowsDotA"));
 
 	idList< idList< idStr, TAG_IDLIB_LIST_MENU >, TAG_IDLIB_LIST_MENU > menuOptions;	
 	

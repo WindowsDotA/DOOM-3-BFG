@@ -181,6 +181,19 @@ bulk of the codebase, so it is the best place for analyze pragmas.
 // win32 needs this, but 360 doesn't
 #pragma warning( disable: 6540 )	// warning C6540: The use of attribute annotations on this function will invalidate all of its existing __declspec annotations [D:\tech5\engine\engine-10.vcxproj]
 
+#pragma region VS2022
+
+#pragma warning( disable: 4244 )	// warning C4244: 'argument' : conversion from 'type1' to 'type2', possible loss of data
+#pragma warning( disable: 4456 )	// warning C4456: declaration of 'identifier' hides previous local declaration
+#pragma warning( disable: 4458 )	// warning C4458: declaration of 'identifier' hides class member
+#pragma warning( disable: 4499 )	// warning C4499: 'function' : an explicit specialization cannot have a storage class (ignored)
+#pragma warning( disable: 4595 )	// warning C4595: 'class': non-member operator new or delete functions may not be declared inline
+#pragma warning( disable: 26429 )	// warning C26429: Symbol is never tested for nullness, it can be marked as gsl::not_null
+#pragma warning( disable: 26432 )	// warning C26432: If you define or delete any default operation in the type 'type-name', define or delete them all (c.21)
+#pragma warning( disable: 26814 )	// warning C26814: The const variable 'variable' can be computed at compile time. Consider using constexpr (con.5)
+
+#pragma endregion
+
 
 // checking format strings catches a LOT of errors
 #include <CodeAnalysis\SourceAnnotations.h>
