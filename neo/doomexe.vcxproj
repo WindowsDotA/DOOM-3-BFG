@@ -523,22 +523,6 @@
     <ResourceCompile Include="sys\win32\rc\doom.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\doomclassic\doomclassic.vcxproj" Condition="'$(Platform)'=='Win32'">
-      <Project>{d87adc61-3968-4a89-824f-01365ab6bd88}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
-    <ProjectReference Include="..\doomclassic\timidity\timidity.vcxproj" Condition="'$(Platform)'=='Win32'">
-      <Project>{3267f0ed-fe57-4348-91d7-aa8a4976750f}</Project>
-      <Private>false</Private>
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
-      <LinkLibraryDependencies>true</LinkLibraryDependencies>
-      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
-    </ProjectReference>
     <ProjectReference Include="external.vcxproj">
       <Project>{b679fda2-cb76-4348-906b-4caa294195fd}</Project>
     </ProjectReference>

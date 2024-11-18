@@ -880,10 +880,6 @@ bool idCommonLocal::LoadGame( const char * saveName ) {
 		return false;
 	}
 
-	if ( GetCurrentGame() != DOOM3_BFG ) {
-		return false;
-	}
-
 	if ( session->GetSignInManager().GetMasterLocalUser() == NULL ) {
 		return false;
 	}

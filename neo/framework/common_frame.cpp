@@ -32,8 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "Common_local.h"
 #include "../renderer/Image.h"
 #include "../renderer/ImageOpts.h"
-#include "../../doomclassic/doom/doomlib.h"
-#include "../../doomclassic/doom/globaldata.h"
 
 /*
 
@@ -122,7 +120,7 @@ int idGameThread::Run() {
 
 	// we should have consumed all of our usercmds
 	if ( userCmdMgr ) {
-		if ( userCmdMgr->HasUserCmdForPlayer( game->GetLocalClientNum() ) && common->GetCurrentGame() == DOOM3_BFG ) {
+		if ( userCmdMgr->HasUserCmdForPlayer( game->GetLocalClientNum() ) ) {
 			idLib::Printf( "idGameThread::Run: didn't consume all usercmds\n" );
 		}
 	}
@@ -216,26 +214,6 @@ void idCommonLocal::Draw() {
 
 	if ( loadGUI != NULL ) {
 		loadGUI->Render( renderSystem, Sys_Milliseconds() );
-	} else if ( currentGame == DOOM_CLASSIC || currentGame == DOOM2_CLASSIC ) {
-		const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
-		const float sysHeight = renderSystem->GetHeight();
-		const float sysAspect = sysWidth / sysHeight;
-		const float doomAspect = 4.0f / 3.0f;
-		const float adjustment = sysAspect / doomAspect;
-		const float barHeight = ( adjustment >= 1.0f ) ? 0.0f : ( 1.0f - adjustment ) * (float)SCREEN_HEIGHT * 0.25f;
-		const float barWidth = ( adjustment <= 1.0f ) ? 0.0f : ( adjustment - 1.0f ) * (float)SCREEN_WIDTH * 0.25f;
-		if ( barHeight > 0.0f ) {
-			renderSystem->SetColor( colorBlack );
-			renderSystem->DrawStretchPic( 0, 0, SCREEN_WIDTH, barHeight, 0, 0, 1, 1, whiteMaterial );
-			renderSystem->DrawStretchPic( 0, SCREEN_HEIGHT - barHeight, SCREEN_WIDTH, barHeight, 0, 0, 1, 1, whiteMaterial );
-		}
-		if ( barWidth > 0.0f ) {
-			renderSystem->SetColor( colorBlack );
-			renderSystem->DrawStretchPic( 0, 0, barWidth, SCREEN_HEIGHT, 0, 0, 1, 1, whiteMaterial );
-			renderSystem->DrawStretchPic( SCREEN_WIDTH - barWidth, 0, barWidth, SCREEN_HEIGHT, 0, 0, 1, 1, whiteMaterial );
-		}
-		renderSystem->SetColor4( 1, 1, 1, 1 );
-		renderSystem->DrawStretchPic( barWidth, barHeight, SCREEN_WIDTH - barWidth * 2.0f, SCREEN_HEIGHT - barHeight * 2.0f, 0, 0, 1, 1, doomClassicMaterial );
 	} else if ( game && game->Shell_IsActive() ) {
 		bool gameDraw = game->Draw( game->GetLocalClientNum() );
 		if ( !gameDraw ) {
@@ -377,10 +355,6 @@ void idCommonLocal::Frame() {
 			com_forceGenericSIMD.ClearModified();
 		}
 
-		// Do the actual switch between Doom 3 and the classics here so
-		// that things don't get confused in the middle of the frame.
-		PerformGameSwitch();
-
 		// pump all the events
 		Sys_GenerateEvents();
 
@@ -397,7 +371,7 @@ void idCommonLocal::Frame() {
 
 		// if the console or another gui is down, we don't need to hold the mouse cursor
 		bool chatting = false;
-		if ( console->Active() || Dialog().IsDialogActive() || session->IsSystemUIShowing() || ( game && game->InhibitControls() && !IsPlayingDoomClassic() ) ) {
+		if ( console->Active() || Dialog().IsDialogActive() || session->IsSystemUIShowing() || ( game && game->InhibitControls() ) ) {
 			Sys_GrabMouseCursor( false );
 			usercmdGen->InhibitUsercmd( INHIBIT_SESSION, true );
 			chatting = true;
@@ -406,7 +380,7 @@ void idCommonLocal::Frame() {
 			usercmdGen->InhibitUsercmd( INHIBIT_SESSION, false );
 		}
 
-		const bool pauseGame = ( !mapSpawned || ( !IsMultiplayer() && ( Dialog().IsDialogPausing() || session->IsSystemUIShowing() || ( game && game->Shell_IsActive() ) ) ) ) && !IsPlayingDoomClassic();
+		const bool pauseGame = ( !mapSpawned || ( !IsMultiplayer() && ( Dialog().IsDialogPausing() || session->IsSystemUIShowing() || ( game && game->Shell_IsActive() ) ) ) );
 
 		// save the screenshot and audio from the last draw if needed
 		if ( aviCaptureMode ) {
@@ -614,11 +588,6 @@ void idCommonLocal::Frame() {
 			userCmdMgr.PutUserCmdForPlayer( game->GetLocalClientNum(), newCmd );
 		}
 
-		// If we're in Doom or Doom 2, run tics and upload the new texture.
-		if ( ( GetCurrentGame() == DOOM_CLASSIC || GetCurrentGame() == DOOM2_CLASSIC ) && !( Dialog().IsDialogPausing() || session->IsSystemUIShowing() ) ) {
-			RunDoomClassicFrame();
-		}
-		
 		// start the game / draw command generation thread going in the background
 		gameReturn_t ret = gameThread.RunGameAndDraw( numGameFrames, userCmdMgr, IsClient(), gameFrame - numGameFrames );
 
@@ -699,50 +668,4 @@ void idCommonLocal::Frame() {
 	} catch( idException & ) {
 		return;			// an ERP_DROP was thrown
 	}
-}
-
-/*
-=================
-idCommonLocal::RunDoomClassicFrame
-=================
-*/
-void idCommonLocal::RunDoomClassicFrame() {
-	static int doomTics = 0;
-
-	if( DoomLib::expansionDirty ) {
-
-		// re-Initialize the Doom Engine.
-		DoomLib::Interface.Shutdown();
-		DoomLib::Interface.Startup( 1, false );
-		DoomLib::expansionDirty = false;
-	}
-
-
-	if ( DoomLib::Interface.Frame( doomTics, &userCmdMgr ) ) {
-		Globals *data = (Globals*)DoomLib::GetGlobalData( 0 );
-
-		idArray< unsigned int, 256 > palette;
-		std::copy( data->XColorMap, data->XColorMap + palette.Num(), palette.Ptr() );
-
-		// Do the palette lookup.
-		for ( int row = 0; row < DOOMCLASSIC_RENDERHEIGHT; ++row ) {
-			for ( int column = 0; column < DOOMCLASSIC_RENDERWIDTH; ++column ) {
-				const int doomScreenPixelIndex = row * DOOMCLASSIC_RENDERWIDTH + column;
-				const byte paletteIndex = data->screens[0][doomScreenPixelIndex];
-				const unsigned int paletteColor = palette[paletteIndex];
-				const byte red = (paletteColor & 0xFF000000) >> 24;
-				const byte green = (paletteColor & 0x00FF0000) >> 16;
-				const byte blue = (paletteColor & 0x0000FF00) >> 8;
-
-				const int imageDataPixelIndex = row * DOOMCLASSIC_RENDERWIDTH * DOOMCLASSIC_BYTES_PER_PIXEL + column * DOOMCLASSIC_BYTES_PER_PIXEL;
-				doomClassicImageData[imageDataPixelIndex]		= red;
-				doomClassicImageData[imageDataPixelIndex + 1]	= green;
-				doomClassicImageData[imageDataPixelIndex + 2]	= blue;
-				doomClassicImageData[imageDataPixelIndex + 3]	= 255;
-			}
-		}
-	}
-
-	renderSystem->UploadImage( "_doomClassic", doomClassicImageData.Ptr(), DOOMCLASSIC_RENDERWIDTH, DOOMCLASSIC_RENDERHEIGHT );
-	doomTics++;
 }

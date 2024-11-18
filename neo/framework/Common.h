@@ -306,9 +306,6 @@ public:
 	virtual bool				JapaneseCensorship() const = 0;
 
 	virtual void				QueueShowShell() = 0;		// Will activate the shell on the next frame.
-
-	virtual currentGame_t		GetCurrentGame() const = 0;
-	virtual void				SwitchToGame( currentGame_t newGame ) = 0;
 };
 
 extern idCommon *		common;

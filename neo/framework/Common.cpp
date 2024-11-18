@@ -36,10 +36,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../sound/sound.h"
 
-#include "../../doomclassic/doom/doomlib.h"
-#include "../../doomclassic/doom/d_event.h"
-#include "../../doomclassic/doom/d_main.h"
-
 
 
 #include "../sys/sys_savegame.h"
@@ -115,10 +111,7 @@ idCommonLocal::idCommonLocal() :
 	lastPacifierSessionTime( 0 ),
 	lastPacifierGuiTime( 0 ),
 	lastPacifierDialogState( false ),
-	showShellRequested( false ),
-	currentGame( DOOM3_BFG ),
-	idealCurrentGame( DOOM3_BFG ),
-	doomClassicMaterial( NULL )
+	showShellRequested( false )
 	{
 
 	snapCurrent.localTime = -1;
@@ -1183,19 +1176,6 @@ void idCommonLocal::Init( int argc, const char * const * argv, const char *cmdli
 
 		fileSystem->EndLevelLoad();
 
-		// Initialize support for Doom classic.
-		doomClassicMaterial = declManager->FindMaterial( "_doomClassic" );
-		idImage *image = globalImages->GetImage( "_doomClassic" );
-		if ( image != NULL ) {
-			idImageOpts opts;
-			opts.format = FMT_RGBA8;
-			opts.colorFormat = CFM_DEFAULT;
-			opts.width = DOOMCLASSIC_RENDERWIDTH;
-			opts.height = DOOMCLASSIC_RENDERHEIGHT;
-			opts.numLevels = 1;
-			image->AllocImage( opts, TF_LINEAR, TR_REPEAT );
-		}
-
 		com_fullyInitialized = true;
 
 
@@ -1522,33 +1502,6 @@ bool idCommonLocal::ProcessEvent( const sysEvent_t *event ) {
 		return true;
 	}
 
-	// Let Doom classic run events.
-	if ( IsPlayingDoomClassic() ) {
-		// Translate the event to Doom classic format.
-		event_t classicEvent;
-		if ( event->evType == SE_KEY ) {
-
-			if( event->evValue2 == 1 ) {
-				classicEvent.type = ev_keydown;
-			} else if( event->evValue2 == 0 ) {
-				classicEvent.type = ev_keyup;
-			}
-
-			DoomLib::SetPlayer( 0 );
-			
-			extern Globals * g;
-			if ( g != NULL ) {
-				classicEvent.data1 =  DoomLib::RemapControl( event->GetKey() );
-											
-				D_PostEvent( &classicEvent );
-			}
-			DoomLib::SetPlayer( -1 );
-		}
-
-		// Let the classics eat all events.
-		return true;
-	}
-
 	// menus / etc
 	if ( MenuEvent( event ) ) {
 		return true;
@@ -1576,78 +1529,6 @@ idCommonLocal::ResetPlayerInput
 */
 void idCommonLocal::ResetPlayerInput( int playerIndex ) { 
 	userCmdMgr.ResetPlayer( playerIndex ); 
-}
-
-/*
-========================
-idCommonLocal::SwitchToGame
-========================
-*/
-void idCommonLocal::SwitchToGame( currentGame_t newGame ) {
-	idealCurrentGame = newGame;
-}
-
-/*
-========================
-idCommonLocal::PerformGameSwitch
-========================
-*/
-void idCommonLocal::PerformGameSwitch() {
-	// If the session state is past the menu, we should be in Doom 3.
-	// This will happen if, for example, we accept an invite while playing
-	// Doom or Doom 2.
-	if ( session->GetState() > idSession::IDLE ) {
-		idealCurrentGame = DOOM3_BFG;
-	}
-
-	if ( currentGame == idealCurrentGame ) {
-		return;
-	}
-
-	const int DOOM_CLASSIC_HZ = 35;
-
-	if ( idealCurrentGame == DOOM_CLASSIC || idealCurrentGame == DOOM2_CLASSIC ) {
-		// Pause Doom 3 sound.
-		if ( menuSoundWorld != NULL ) {
-			menuSoundWorld->Pause();
-		}
-
-		DoomLib::skipToNew = false;
-		DoomLib::skipToLoad = false;
-
-		// Reset match parameters for the classics.
-		DoomLib::matchParms = idMatchParameters();
-
-		// The classics use the usercmd manager too, clear it.
-		userCmdMgr.SetDefaults();
-
-		// Classics need a local user too.
-		session->UpdateSignInManager();
-		session->GetSignInManager().RegisterLocalUser( 0 );
-
-		com_engineHz_denominator = 100LL * DOOM_CLASSIC_HZ;
-		com_engineHz_latched = DOOM_CLASSIC_HZ;
-
-		DoomLib::SetCurrentExpansion( idealCurrentGame );
-		
-	} else if ( idealCurrentGame == DOOM3_BFG ) {
-		DoomLib::Interface.Shutdown();
-		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
-		com_engineHz_latched = com_engineHz.GetFloat();
-		
-		// Don't MoveToPressStart if we have an invite, we need to go
-		// directly to the lobby.
-		if ( session->GetState() <= idSession::IDLE ) {
-			session->MoveToPressStart();
-		}
-
-		// Unpause Doom 3 sound.
-		if ( menuSoundWorld != NULL ) {
-			menuSoundWorld->UnPause();
-		}
-	}
-
-	currentGame = idealCurrentGame;
 }
 
 /*
