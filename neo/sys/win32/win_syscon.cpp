@@ -303,16 +303,16 @@ void Sys_CreateConsole() {
 		return;
 	}
 
-	rect.left = 0;
-	rect.right = 540;
-	rect.top = 0;
-	rect.bottom = 450;
-	AdjustWindowRect( &rect, DEDSTYLE, FALSE );
-
 	hDC = GetDC( GetDesktopWindow() );
 	swidth = GetDeviceCaps( hDC, HORZRES );
 	sheight = GetDeviceCaps( hDC, VERTRES );
 	ReleaseDC( GetDesktopWindow(), hDC );
+
+	rect.left = 0;
+	rect.right = swidth - 200;
+	rect.top = 0;
+	rect.bottom = sheight - 200;
+	AdjustWindowRect(&rect, DEDSTYLE, FALSE);
 
 	s_wcd.windowWidth = rect.right - rect.left + 1;
 	s_wcd.windowHeight = rect.bottom - rect.top + 1;
@@ -323,7 +323,7 @@ void Sys_CreateConsole() {
 							   DEDCLASS,
 							   GAME_NAME,
 							   DEDSTYLE,
-							   ( swidth - 600 ) / 2, ( sheight - 450 ) / 2 , rect.right - rect.left + 1, rect.bottom - rect.top + 1,
+							   ( swidth - rect.right ) / 2, ( sheight - rect.bottom ) / 2 , s_wcd.windowWidth, s_wcd.windowHeight,
 							   NULL,
 							   NULL,
 							   win32.hInstance,
@@ -343,12 +343,36 @@ void Sys_CreateConsole() {
 
 	ReleaseDC( s_wcd.hWnd, hDC );
 
+	int mainPanelWidth = Min((int)rect.right, 1920);
+	int mainPanelHeight = Min((int)rect.bottom, 1080);
+	const int elementSpace = 10;
+	const int buttonWidth = 100;
+	const int buttonHeight = 30;
+
+	// message panel
+	const int element_1_positionX = 6;
+	const int element_1_positionY = 40;
+	int element_1_width = mainPanelWidth - element_1_positionX * 2;
+	const int element_1_height = mainPanelHeight - element_1_positionY - elementSpace * 3 - buttonHeight * 2;
+
+	// edit panel
+	const int element_2_positionX = element_1_positionX;
+	const int element_2_positionY = element_1_positionY + element_1_height + elementSpace;
+	int element_2_width = mainPanelWidth - element_2_positionX * 3;
+	const int element_2_height = 20;
+
+	// buttons
+	int element_3_positionY = mainPanelHeight - buttonHeight - element_1_positionX - elementSpace;
+	const int element_3_sub_1_positionX = element_1_positionX;
+	const int element_3_sub_2_positionX = element_3_sub_1_positionX + buttonWidth + 20;
+	int element_3_sub_3_positionX = mainPanelWidth - buttonWidth - element_1_positionX * 2;
+
 	//
 	// create the input line
 	//
 	s_wcd.hwndInputLine = CreateWindow( "edit", NULL, WS_CHILD | WS_VISIBLE | WS_BORDER | 
 												ES_LEFT | ES_AUTOHSCROLL,
-												6, 400, 528, 20,
+												element_2_positionX, element_2_positionY, element_2_width, element_2_height,
 												s_wcd.hWnd, 
 												( HMENU ) INPUT_ID,	// child window ID
 												win32.hInstance, NULL );
@@ -357,21 +381,21 @@ void Sys_CreateConsole() {
 	// create the buttons
 	//
 	s_wcd.hwndButtonCopy = CreateWindow( "button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-												5, 425, 72, 24,
+												element_3_sub_1_positionX, element_3_positionY, buttonWidth, buttonHeight,
 												s_wcd.hWnd, 
 												( HMENU ) COPY_ID,	// child window ID
 												win32.hInstance, NULL );
 	SendMessage( s_wcd.hwndButtonCopy, WM_SETTEXT, 0, ( LPARAM ) "copy" );
 
 	s_wcd.hwndButtonClear = CreateWindow( "button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-												82, 425, 72, 24,
+												element_3_sub_2_positionX, element_3_positionY, buttonWidth, buttonHeight,
 												s_wcd.hWnd, 
 												( HMENU ) CLEAR_ID,	// child window ID
 												win32.hInstance, NULL );
 	SendMessage( s_wcd.hwndButtonClear, WM_SETTEXT, 0, ( LPARAM ) "clear" );
 
 	s_wcd.hwndButtonQuit = CreateWindow( "button", NULL, BS_PUSHBUTTON | WS_VISIBLE | WS_CHILD | BS_DEFPUSHBUTTON,
-												462, 425, 72, 24,
+												element_3_sub_3_positionX, element_3_positionY, buttonWidth, buttonHeight,
 												s_wcd.hWnd, 
 												( HMENU ) QUIT_ID,	// child window ID
 												win32.hInstance, NULL );
@@ -383,7 +407,7 @@ void Sys_CreateConsole() {
 	//
 	s_wcd.hwndBuffer = CreateWindow( "edit", NULL, WS_CHILD | WS_VISIBLE | WS_VSCROLL | WS_BORDER | 
 												ES_LEFT | ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY,
-												6, 40, 526, 354,
+												element_1_positionX, element_1_positionY, element_1_width, element_1_height,
 												s_wcd.hWnd, 
 												( HMENU ) EDIT_ID,	// child window ID
 												win32.hInstance, NULL );
