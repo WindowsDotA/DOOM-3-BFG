@@ -689,6 +689,7 @@ address_t GetCallerAddr( long _ebp ) {
 	long midPtPtr;
 	long res = 0;
 
+#ifndef _WIN64
 	__asm {
 		mov		eax, _ebp
 		mov		ecx, [eax]		// check for end of stack frames list
@@ -701,6 +702,7 @@ address_t GetCallerAddr( long _ebp ) {
 	}
 	res = GetFuncAddr( midPtPtr );
 label:
+#endif // !_WIN64
 	return res;
 }
 
@@ -712,7 +714,7 @@ Sys_GetCallStack
 ==================
 */
 void Sys_GetCallStack( address_t *callStack, const int callStackSize ) {
-#if 1 //def _DEBUG
+#if 0 //def _DEBUG
 	int i;
 	long m_ebp;
 

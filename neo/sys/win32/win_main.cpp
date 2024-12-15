@@ -569,7 +569,7 @@ Sys_ListFiles
 int Sys_ListFiles( const char *directory, const char *extension, idStrList &list ) {
 	idStr		search;
 	struct _finddata_t findinfo;
-	int			findhandle;
+	intptr_t			findhandle;
 	int			flag;
 
 	if ( !extension) {
@@ -1264,7 +1264,8 @@ void Win_Frame() {
 	}
 }
 
-extern "C" { void _chkstk( int size ); };
+extern "C" { void _chkstk(int size); };
+extern "C" { void __chkstk( int size ); };
 void clrstk();
 
 /*
@@ -1285,9 +1286,15 @@ HackChkStk
 */
 void HackChkStk() {
 	DWORD	old;
+#ifdef _WIN64
+	VirtualProtect(__chkstk, 6, PAGE_EXECUTE_READWRITE, &old);
+	*(byte*)__chkstk = 0xe9;
+	*(int*)((int)__chkstk + 1) = (int)clrstk - (int)__chkstk - 5;
+#else
 	VirtualProtect( _chkstk, 6, PAGE_EXECUTE_READWRITE, &old );
 	*(byte *)_chkstk = 0xe9;
 	*(int *)((int)_chkstk+1) = (int)clrstk - (int)_chkstk - 5;
+#endif // _WIN64
 
 	TestChkStk();
 }
@@ -1379,7 +1386,7 @@ _except_handler
 ====================
 */
 EXCEPTION_DISPOSITION __cdecl _except_handler( struct _EXCEPTION_RECORD *ExceptionRecord, void * EstablisherFrame,
-												struct _CONTEXT *ContextRecord, void * DispatcherContext ) {
+												struct _WOW64_CONTEXT *ContextRecord, void * DispatcherContext ) {
 
 	static char msg[ 8192 ];
 	char FPUFlags[2048];
@@ -1557,6 +1564,7 @@ I tried to get the run time to call this at every function entry, but
 ====================
 */
 static int	parmBytes;
+#ifndef _WIN64
 __declspec( naked ) void clrstk() {
 	// eax = bytes to add to stack
 	__asm {
@@ -1584,6 +1592,9 @@ __declspec( naked ) void clrstk() {
         ret
 	}
 }
+#else
+void clrstk() {}
+#endif // !_WIN64
 
 /*
 ==================
