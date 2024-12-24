@@ -1236,12 +1236,12 @@ void idSIMD::Test_f( const idCmdArgs &args ) {
 
 		if ( idStr::Icmp( argString, "SSE" ) == 0 ) {
 			if ( !( cpuid & CPUID_MMX ) || !( cpuid & CPUID_SSE ) ) {
-				common->Printf( "CPU does not support MMX & SSE\n" );
+				idLib::common->Printf( "CPU does not support MMX & SSE\n" );
 				return;
 			}
 			p_simd = new (TAG_MATH) idSIMD_SSE;
 		} else {
-			common->Printf( "invalid argument, use: MMX, 3DNow, SSE, SSE2, SSE3, AltiVec\n" );
+			idLib::common->Printf( "invalid argument, use: MMX, 3DNow, SSE, SSE2, SSE3, AltiVec\n" );
 			return;
 		}
 	}

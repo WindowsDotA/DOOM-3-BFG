@@ -284,7 +284,7 @@ idLangDict::Save
 ========================
 */
 bool idLangDict::Save( const char * fileName ) {
-	idFile * outFile = fileSystem->OpenFileWrite( fileName );
+	idFile * outFile = idLib::fileSystem->OpenFileWrite( fileName );
 	if ( outFile == NULL ) {
 		idLib::Warning( "Error saving: %s", fileName );
 		return false;
